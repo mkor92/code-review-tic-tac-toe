@@ -4,10 +4,23 @@
  * Globalt objekt som innehåller de attribut som ni skall använda.
  * Initieras genom anrop till funktionern initGlobalObject().
  */
-let oGameData = {};
+let oGameData = {
+    gameField: [],
+    playerOne: "X",
+    playerTwo: "O",
+    currentPlayer: "",
+    nickNamePlayerOne: "",
+    nickNamePlayerTwo: "",
+    colorPlayerOne: "",
+    colorPlayerTwo: "",
+};
 
-window.addEventListener('load', () => {
+
+ window.addEventListener('load', () => {
     initGlobalObject();
+    console.log(checkWinner(oGameData.playerTwo) + " = testar checkWinner funktionen");
+    console.log(checkForGameOver() + " = testar checkForGameOver funktionen");
+    console.log(checkForDraw() + " = testar checkForDraw funktionen");
     if(checkForGameOver() === 1) {
         console.log("Spelare 1 vann");        
     } else if(checkForGameOver() === 2) {
@@ -17,7 +30,7 @@ window.addEventListener('load', () => {
     } else {
         console.log("Spelet fortsätter");
     }
-});
+}); 
 
 /**
  * Initerar det globala objektet med de attribut som ni skall använda er av.
@@ -80,18 +93,56 @@ function initGlobalObject() {
  * Funktionen tar inte emot några värden.
  */
 function checkForGameOver() {   
-
+ if (checkWinner(oGameData.playerOne) === true) {
+    return 1;
+} else if (checkWinner(oGameData.playerTwo) === true) {
+    return 2;
+} else if (checkForDraw() === true) {
+    return 3;
+} else {
+    return 0;
+}; 
 }
+
+
 
 // Säg till om ni vill få pseudokod för denna funktion
 // Viktigt att funktionen returnerar true eller false baserat på om den inskickade spelaren är winner eller ej
 function checkWinner(playerIn) {
+    
+    
+    const winningCombinations = [
+    [ 0, 1, 2 ],
+    [ 3, 4, 5 ],
+    [ 6, 7, 8 ],
+    [ 0, 3, 6 ],
+    [ 1, 4, 7 ],
+    [ 2, 5, 8 ],
+    [ 0, 4, 8 ],
+    [ 2, 4, 6 ],
+    
+    ];
 
+    
+    for (let combination of winningCombinations) {
+        const [a, b, c] = combination;
+
+        const field = oGameData.gameField;
+
+        // Om alla tre positioner i kombinationen innehåller spelarens symbol returnera true
+        if (field[a] === playerIn && field[b] === playerIn && field[c] === playerIn) {
+            return true;
+        }
+    }
+
+    // Om ingen vinstkombination hittas, returnera false
+    return false;
 }
+
 
 //Kontrollera om alla platser i oGameData.GameField är fyllda. Om sant returnera true, annars false.
 function checkForDraw() {
-
+    return oGameData.gameField.every(cell => cell !== '');
 }
 
 
