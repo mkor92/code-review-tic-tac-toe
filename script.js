@@ -1,5 +1,6 @@
 "use strict";
 
+
 /**
  * Globalt objekt som innehåller de attribut som ni skall använda.
  * Initieras genom anrop till funktionern initGlobalObject().
@@ -18,9 +19,9 @@ let oGameData = {
 
  window.addEventListener('load', () => {
     initGlobalObject();
-    console.log(checkWinner(oGameData.playerTwo) + " = testar checkWinner funktionen");
-    console.log(checkForGameOver() + " = testar checkForGameOver funktionen");
-    console.log(checkForDraw() + " = testar checkForDraw funktionen");
+    // console.log(checkWinner(oGameData.playerTwo) + " = testar checkWinner funktionen");
+    //console.log(checkForGameOver() + " = testar checkForGameOver funktionen");
+    // console.log(checkForDraw() + " = testar checkForDraw funktionen");
     if(checkForGameOver() === 1) {
         console.log("Spelare 1 vann");        
     } else if(checkForGameOver() === 2) {
@@ -147,21 +148,127 @@ function checkForDraw() {
 
 
 
-// Nedanstående funktioner väntar vi med!
 
+
+
+// Här skall ni lägga till klassen "d-none" på elementet i DOM-en med id:t "gameArea", samt lägga en lyssnare på "Starta spelet!"-knappen som lyssnar efter ett klick. När den klickas skall ni anropa funktionen "initiateGame()".
 function prepGame() {
 
+    let gameArea = document.getElementById("gameArea");
+    gameArea.classList.add("d-none");
+    
+    
 }
+
+let newGame = document.getElementById("newGame");
+    newGame.addEventListener("click", (event) => {
+        initiateGame();
+});
+
 
 function validateForm() {
     
 }
 
+
+/* Göm formuläret genom att lägga till klassen "d-none".
+Visa spelplanen genom att ta bort klassen "d-none" på elementet med id:t "gameArea".
+Ta bort textInnehållet i elementet med id:t "errorMsg".
+Spara information om båda spelarna i objektet "oGameData" (dvs. användarnamn och färgval för respektive spelare).
+Töm spelplanen genom att läsa in alla td-element, loopa igenom dem, och ändra dess text till en tom sträng (inga mellanslag). Sätt dessutom alla td-elements bakgrundsfärg till "#ffffff".
+Deklarera de lokala variablerna "playerChar" och "playerName".
+Bestäm vilken spelare som skall börja genom att slumpa fram ett tal mellan 0 och 1.
+Om talet är mindre än 0.5 så tilldelar ni:
+playeChar = oGameData.playerOne;
+playerName = oGameData.nickNamePlayerOne;
+oGameData.currentPlayer = oGameData.playerOne;
+Om talet är större än, eller lika med, 0.5 gör ni samma sak som ovan, fast med spelare 2.
+Ändra texten i h1-elementet som ligger i div-elementet med klassen "jumbotron" till "Aktuell spelare är XXX", där ni ersätter XXX med namnet på den aktuella spelaren.
+Lägg till en klicklyssnare på tabellen som innehåller spelplanen. Vid klick skall funktionen "executeMove()" anropas.*/
 function initiateGame() {
+
+
+    let initiateGame = document.getElementById("newGame");
+    let gameArea = document.getElementById("gameArea");
+    let form = document.getElementById("theForm");
+    let errorMsg = oGameData.timeRef;
+
+    initiateGame.classList.add("d-none");
+    form.classList.add("d-none");
+    gameArea.classList.remove("d-none");
+    errorMsg.textContent = "";
+
+    oGameData.nickNamePlayerOne = document.getElementById('nick1').value;
+    oGameData.nickNamePlayerTwo = document.getElementById('nick2').value;
+    oGameData.colorPlayerOne = document.getElementById('color1').value;
+    oGameData.colorPlayerTwo = document.getElementById('color2').value;
+
+
+    let cells = document.querySelectorAll("td");
+    cells.forEach((cell) => {
+        cell.textContent = "";
+        cell.style.backgroundColor = "#ffffff";
+    })
+
+    let playerChar = oGameData.playerOne;
+    let playerName = oGameData.nickNamePlayerOne;
+    if (Math.random() < 0.5) {
+        oGameData.currentPlayer = oGameData.playerOne;
+    } else {
+        oGameData.currentPlayer = oGameData.playerTwo;
+    }
+
+    let jumbotron = document.querySelector(".jumbotron>h1");
+    jumbotron.textContent = `Det är ${playerName} ${playerChar} som börjar`;
+
+    document.querySelectorAll(".cell").forEach(cell => {
+        cell.addEventListener("click", (event) => {
+            executeMove(event);
+        });
+    });
+    
+
 
 }
 
-function executeMove (event) {
+
+/*OM klickhändelsen INTE skett på en tabellcell (td) skall ni inte göra någonting. Annars forstätt följa kokboken.
+Tips!
+Kontrollera att den klickade cellen är ledig. Om den är ledig, gör följande (annars gör ni inget):
+Hämta ut attributet "data-id" från den klickade cellen, och använd detta för att sätta "oGameData.gameField" på den hämtade positionen till nuvarande spelare "oGameData.currentPlayer" (som kommer vara "X", eller "O").
+Kontrollera vem som är nuvarande spelare, och utifrån det sätt bakgrundsfärgen på den klickade tabellcellen till aktuell spelares färg. Sätt även cellens textinnehåll till spelarens symbol ("X" eller "O")
+Ändra därefter oGameData.currentPlayer till den andra spelaren, och uppdatera texten i jumbotronen till den nya spelarens namn
+Anropa er rättningsfunktion för att kontrollera om spelet är slut (den kommer returnera antingen 1, 2, 3 för slut, eller 0 om spelet inte är slut). Om spelet är slut gör följande (annars gör ni inget):
+Anropa gameOver och skicka med resultatet (1, 2 eller 3).*/
+function executeMove(event) {
+
+
+    let square = event.target.getAttribute("data-id");
+    let squareContent = oGameData.gameField[square];
+    let jumbotron = document.querySelector(".jumbotron>h1");
+
+    if (squareContent !== "") {
+        return;
+    }
+    if (oGameData.currentPlayer === 'X') {
+        jumbotron.textContent = `Det är ${oGameData.nickNamePlayerOne} ${oGameData.playerOne} tur!`;
+        event.target.textContent = 'X';
+        event.target.style.color = oGameData.colorPlayerOne;
+        oGameData.gameField[square] = 'X';
+        oGameData.currentPlayer = 'O';
+    }
+    else {
+        jumbotron.textContent = `Det är ${oGameData.nickNamePlayerTwo} ${oGameData.playerTwo} tur!`;
+        event.target.textContent = 'O';
+        event.target.style.color = oGameData.colorPlayerTwo;
+        oGameData.gameField[square] = 'O';
+        oGameData.currentPlayer = 'X';
+    }
+
+    let gameState = checkForGameOver();
+    if (gameState !==0) {
+        gameOver(gameState);
+    }
 
 }
 
@@ -173,6 +280,59 @@ function timer() {
 
 }
 
+/* Denna funktion tar emot resultatet för spelet (1 om spelare 1 vunnit, 2 och spelare 2 vunnit, eller 3 om spelet slutat oavgjort)
+Ta bort klicklyssnaren på tabellen
+Tips!
+Googla metoden removeEventListener()!
+Ta bort klassen "d-none" på formuläret
+Lägg till klassen "d-none" på spelplanen
+Kontrollera vilken spelare som vunnit
+Skriv ut ett vinnarmeddelande i jumbotronen, följa av "Spela igen?".
+Anropa funktionen "initGlobalObject()" som nollställer vårt globala objekt till ursprungsinställningarna.*/
 function gameOver(result) {
+    let cells = document.querySelectorAll(".cell");
+    cells.forEach(cell => {
+        cell.removeEventListener("click", (event) => {
+            executeMove(event);
+        });
+    });
+    
+    let form = document.getElementById("theForm");
+    form.classList.remove("d-none");
+
+    let gameArea = document.getElementById("gameArea");
+    gameArea.classList.remove("d-none");
+
+    let checkingResult = checkForGameOver();
+
+    let jumbotron = document.querySelector(".jumbotron>h1");
+    if (jumbotron) {
+        if (checkingResult === 1) {
+            jumbotron.textContent = `${oGameData.nickNamePlayerOne} has won! Play again?`;
+        }
+        else if (checkingResult === 2) {
+            jumbotron.textContent = `${oGameData.nickNamePlayerTwo} has won! Play again?`;
+        }
+        else if (checkingResult === 3) {
+            jumbotron.textContent = `It's a draw! Play again?`;
+        }
+    }
+
+    initGlobalObject();
+
+    cells.forEach(cell => {
+        cell.textContent = "";
+        cell.style.color = "#ffffff";
+    });
+
+    let startAgainButton = document.getElementById("newGame");
+    startAgainButton.classList.remove("d-none");
+    startAgainButton.textContent = "Spela igen!";
+
 
 }
+
+ 
+
+    
+
