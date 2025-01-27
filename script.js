@@ -193,6 +193,7 @@ function setPlayerData() {
 }
 
 function setCurrentPlayer() {
+
   let playerChar = oGameData.playerOne;
   let playerName = oGameData.nickNamePlayerOne;
 
