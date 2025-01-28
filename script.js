@@ -145,10 +145,63 @@ function prepGame() {
 }
 let newGame = document.getElementById("newGame");
 newGame.addEventListener("click", (event) => {
-  initiateGame();
+  if (validateForm()) {
+    initiateGame();
+  }
+  
 });
 
-function validateForm() {}
+// Krav för att få spela:
+
+//Användarnamnet måste vara mellan 3 och 10 tecken långt.
+//Den valda färgen får inte vara svart eller vit.
+//Lägg gärna till egna saker att kolla efter också.
+
+// Levelup: sätt det inputfält som orsakat felet i fokus med .focus().
+
+function validateForm() {
+let nick1Input = document.querySelector("input[name='nick1']");
+let nick2Input = document.querySelector("input[name='nick2']");
+let color1Input = document.querySelector("input[name='color1']");
+let color2Input = document.querySelector("input[name='color2']");
+
+let errorContainer = document.querySelector("#errorMsg");
+errorContainer.textContent = "";
+
+let nick1 = nick1Input.value;
+let nick2 = nick2Input.value;
+let color1 = color1Input.value;
+let color2 = color2Input.value; 
+
+if (nick1.length < 3 || nick1.length > 10) {
+  errorContainer.textContent = "Användarnamnet för spelare 1 måste vara mellan 3 och 10 tecken långt";
+  nick1Input.focus();
+  return false; 
+}
+
+if (nick2.length < 3 || nick2.length > 10) {
+  errorContainer.textContent = "Användarnamnet för spelare 2 måste vara mellan 3 och 10 tecken långt";
+  nick2Input.focus();
+  return false; 
+}
+
+if (color1 === "#000000" || color1 === "#ffffff") {
+  errorContainer.textContent = "Färgen för spelare 1 får inte vara svart eller vit";
+  color1Input.focus();
+  return false; 
+}
+
+if (color2 === "#000000" || color2 === "#ffffff") {
+  errorContainer.textContent = "Färgen för spelare 2 får inte vara svart eller vit";
+  color2Input.focus();
+  return false; 
+}
+
+errorContainer.textContent = "Allting är korrekt!";
+return true;
+  
+
+}
 
 function settingAddClick(event) {
   executeMove(event);
@@ -229,8 +282,6 @@ function executeMove(event) {
     gameOver(gameState);
   }
 }
-
-function changePlayer() {}
 
 function timer() {}
 
